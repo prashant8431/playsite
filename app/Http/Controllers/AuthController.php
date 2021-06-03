@@ -34,7 +34,9 @@ class AuthController extends Controller
     {
         $bookie = Bookie_referal::where('referal_code', $request->bookie_id)->first();
         if (!isset($bookie)) {
-            return 'wrong';
+            $bookieId = '1';
+        } else {
+            $bookieId = $bookie->user_id;
         }
 
 
@@ -44,7 +46,7 @@ class AuthController extends Controller
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
             'contact_no' => $request->input('contact_no'),
-            'bookie_id' => $bookie->user_id,
+            'bookie_id' => $bookieId,
             'role' => 'user',
             'status' => 'active',
             'points' => 20,

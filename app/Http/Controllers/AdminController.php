@@ -258,4 +258,34 @@ class AdminController extends Controller
             ->get();
         return $history;
     }
+
+    public function addBalAdmin(Request $request)
+    {
+        $user = User::where('user_name', $request->userName)->first();
+        $availPoints = $user->points;
+        $points = $availPoints + $request->addBal;
+
+
+        $history = new History;
+        $history->user_id = $user->id;
+        $history->description = 'Buy';
+        $history->points = $request->addBal;
+        $history->balance = $points;
+        $history->resultStatus = 'Success';
+        $history->type = 'Credit';
+        $history->save();
+
+        $user->points = $points;
+        $user->save();
+
+        return $user;
+    }
+
+    public function agentStatus(Request $request)
+    {
+        $user = User::where('id', $request->id)
+            ->update(['status' => $request->type]);
+
+        return $user;
+    }
 }

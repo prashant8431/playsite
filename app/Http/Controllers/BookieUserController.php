@@ -139,25 +139,33 @@ class BookieUserController extends Controller
 
     public function addBal(Request $request)
     {
-        $user = User::where('user_name', $request->userName)
-            ->where('bookie_id', Auth::id())->first();
-        $availPoints = $user->points;
-        $points = $availPoints + $request->addBal;
+        $agent = User::where('id', Auth::id())->first();
+
+        if ($agent->points >= $request->addBal) {
+            $user = User::where('user_name', $request->userName)
+                ->where('bookie_id', Auth::id())->first();
+            $availPoints = $user->points;
+            $points = $availPoints + $request->addBal;
 
 
-        $history = new History;
-        $history->user_id = $user->id;
-        $history->description = 'Buy';
-        $history->points = $request->addBal;
-        $history->balance = $points;
-        $history->resultStatus = 'Success';
-        $history->type = 'Credit';
-        $history->save();
+            $history = new History;
+            $history->user_id = $user->id;
+            $history->description = 'Buy';
+            $history->points = $request->addBal;
+            $history->balance = $points;
+            $history->resultStatus = 'Success';
+            $history->type = 'Credit';
+            $history->save();
 
-        $user->points = $points;
-        $user->save();
+            $user->points = $points;
+            $user->save();
 
-        return $user;
+            $agent->points = $agent->points - $request->addBal;
+            $agent->save();
+            return $user;
+        } else {
+            return 'Insufficient balance';
+        }
     }
     public function userStatus(Request $request)
     {

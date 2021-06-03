@@ -56,6 +56,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('assignBookie', 'AdminController@assignBookie')->middleware('can:admin');
     Route::post('makeBookie', 'AdminController@makeBookie')->middleware('can:admin');
     Route::post('bookieList', 'AdminController@bookieListIndex')->middleware('can:admin');
+    Route::post('addBalAdmin', 'AdminController@addBalAdmin')->middleware('can:admin');
+    Route::post('agentStatus', 'AdminController@agentStatus')->middleware('can:admin');
 
     Route::apiResource('bookieRate', 'BookieRateController')->middleware('can:admin');
 
