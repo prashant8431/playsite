@@ -38,8 +38,9 @@ class BookieReferalController extends Controller
     public function store(Request $request)
     {
 
+        $referalCode = $this->unique_code(6);
         $update =  Bookie_referal::where('user_id', Auth::id())->update([
-            'referal_code' => $request->code,
+            'referal_code' => $referalCode,
             'status' => 'active'
         ]);
 
@@ -48,11 +49,16 @@ class BookieReferalController extends Controller
         } else {
             $referal = new Bookie_referal;
             $referal->user_id = Auth::id();
-            $referal->referal_code = $request->code;
+            $referal->referal_code = $referalCode;
             $referal->status = 'active';
             $referal->save();
             return $referal;
         }
+    }
+
+    function unique_code($limit)
+    {
+        return substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, $limit);
     }
 
     /**

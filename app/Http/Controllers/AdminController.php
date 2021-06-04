@@ -261,24 +261,50 @@ class AdminController extends Controller
 
     public function addBalAdmin(Request $request)
     {
-        $user = User::where('user_name', $request->userName)->first();
-        $availPoints = $user->points;
-        $points = $availPoints + $request->addBal;
+        $admin = User::where('id', Auth::id())->first();
+        if ($request->userName == $admin->user_name) {
+            $user = User::where('user_name', $request->userName)->first();
+            $availPoints = $user->points;
+            $points = $availPoints + $request->addBal;
 
 
-        $history = new History;
-        $history->user_id = $user->id;
-        $history->description = 'Buy';
-        $history->points = $request->addBal;
-        $history->balance = $points;
-        $history->resultStatus = 'Success';
-        $history->type = 'Credit';
-        $history->save();
+            $history = new History;
+            $history->user_id = $user->id;
+            $history->description = 'Buy';
+            $history->points = $request->addBal;
+            $history->balance = $points;
+            $history->resultStatus = 'Success';
+            $history->type = 'Credit';
+            $history->save();
 
-        $user->points = $points;
-        $user->save();
+            $user->points = $points;
+            $user->save();
+            return $user;
+        }
+        if ($admin->points >= $request->addBal) {
+            $user = User::where('user_name', $request->userName)->first();
+            $availPoints = $user->points;
+            $points = $availPoints + $request->addBal;
 
-        return $user;
+
+            $history = new History;
+            $history->user_id = $user->id;
+            $history->description = 'Buy';
+            $history->points = $request->addBal;
+            $history->balance = $points;
+            $history->resultStatus = 'Success';
+            $history->type = 'Credit';
+            $history->save();
+
+            $user->points = $points;
+            $user->save();
+
+            $admin->points = $admin->points - $request->addBal;
+            $admin->save();
+            return $user;
+        } else {
+            return 'Insufficient balance';
+        }
     }
 
     public function agentStatus(Request $request)

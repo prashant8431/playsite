@@ -30,7 +30,7 @@ class RegisterRequest extends FormRequest
             'password' => 'required',
             'password_confirm' => 'required|same:password',
             'contact_no' => 'required|numeric',
-            'bookie_id' => 'required',
+            'bookie_id' => '',
             // 'role' => 'required',
         ];
     }
