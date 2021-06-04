@@ -52,11 +52,6 @@ class BookieUserController extends Controller
 
         $usersRegister = User::where('bookie_id', Auth::id())->get();
 
-        $package = Payment::with('package')->where('user_id', Auth::id())->first();
-
-        if (count($usersRegister) >= $package->package->no_of_users) {
-            return 'exceed';
-        }
         $validated = $request->validate([
             'name' => 'required',
             'username' => 'required|unique:users,user_name',
@@ -74,6 +69,7 @@ class BookieUserController extends Controller
         $user->bookie_id = Auth::id();
         $user->role = 'user';
         $user->status = 'active';
+        $user->rate_id = 1;
         $user->save();
 
         return 'created';
