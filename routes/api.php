@@ -41,7 +41,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('searchToken', 'BookieUserController@searchToken')->middleware('can:bookie');
     Route::post('addBal', 'BookieUserController@addBal')->middleware('can:bookie');
     Route::post('userStatus', 'BookieUserController@userStatus')->middleware('can:bookie');
-    Route::post('deleteUser', 'BookieUserController@deleteUser')->middleware('can:bookie');
     Route::post('generateReport', 'BookieUserController@generateReport')->middleware('can:bookie');
 
     Route::get('withdrawList', 'WithdrawController@withdrawList')->middleware('can:bookie');
@@ -58,6 +57,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('bookieList', 'AdminController@bookieListIndex')->middleware('can:admin');
     Route::post('addBalAdmin', 'AdminController@addBalAdmin')->middleware('can:admin');
     Route::post('agentStatus', 'AdminController@agentStatus')->middleware('can:admin');
+    Route::post('deleteUser', 'AdminController@deleteUser')->middleware('can:admin');
 
     Route::apiResource('bookieRate', 'BookieRateController')->middleware('can:admin');
 

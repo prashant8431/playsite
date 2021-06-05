@@ -147,8 +147,13 @@ class WithdrawController extends Controller
 
     public function withdrawList()
     {
-        return Withdraw::with(['user' => function ($query) {
-            $query->where('bookie_id', Auth::id());
-        }])->orderByDesc('id')->get();
+        // return Withdraw::with(['user' => function ($query) {
+        //     $query->where('bookie_id', Auth::id());
+        // }])->orderByDesc('id')->get();
+
+        return Withdraw::join('users', 'withdraws.user_id', '=', 'users.id')
+            ->where('users.bookie_id', Auth::id())
+            ->select('users.*', 'withdraws.*', 'users.id as userId', 'withdraws.status as wstatus')
+            ->orderByDesc('withdraws.id')->get();
     }
 }

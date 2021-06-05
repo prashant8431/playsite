@@ -314,4 +314,15 @@ class AdminController extends Controller
 
         return $user;
     }
+
+    public function deleteUser(Request $request)
+    {
+        DB::table('oauth_access_tokens')->where('user_id', $request->userId)->delete();
+
+        History::where('user_id', $request->userId)->delete();
+
+        User::where('id', $request->userId)->delete();
+
+        return 'Deleted';
+    }
 }

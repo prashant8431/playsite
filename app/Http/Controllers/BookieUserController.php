@@ -171,13 +171,7 @@ class BookieUserController extends Controller
         return $user;
     }
 
-    public function deleteUser(Request $request)
-    {
-        User::where('user_name', $request->userName)
-            ->where('bookie_id', Auth::id())->update(['bookie_id' => 0, 'status' => 'deleted']);
 
-        return 'deleted';
-    }
 
     public function userHistory($id)
     {
