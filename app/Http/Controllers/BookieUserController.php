@@ -133,6 +133,16 @@ class BookieUserController extends Controller
         return $users;
     }
 
+    public function searchUserForAuto(Request $request)
+    {
+
+        $users = User::where('user_name', 'LIKE', '%' . $request->key . '%')
+            ->where(['bookie_id' => Auth::id(),])
+            ->get();
+
+        return $users;
+    }
+
     public function addBal(Request $request)
     {
         $agent = User::where('id', Auth::id())->first();

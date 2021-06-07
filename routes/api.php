@@ -38,10 +38,11 @@ Route::group(['middleware' => 'auth:api'], function () {
     //bookie
     Route::apiResource('bookieUser', 'BookieUserController')->middleware('can:bookie');
     Route::post('searchUser', 'BookieUserController@searchUser')->middleware('can:bookie');
+    Route::post('generateReport', 'BookieUserController@generateReport')->middleware('can:bookie');
     Route::post('searchToken', 'BookieUserController@searchToken')->middleware('can:bookie');
     Route::post('addBal', 'BookieUserController@addBal')->middleware('can:bookie');
     Route::post('userStatus', 'BookieUserController@userStatus')->middleware('can:bookie');
-    Route::post('generateReport', 'BookieUserController@generateReport')->middleware('can:bookie');
+    Route::post('searchUserForAuto', 'BookieUserController@searchUserForAuto')->middleware('can:bookie');
 
     Route::get('withdrawList', 'WithdrawController@withdrawList')->middleware('can:bookie');
     Route::get('userHistory/{id}', 'BookieUserController@userHistory')->middleware('can:bookie');
