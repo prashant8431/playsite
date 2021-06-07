@@ -325,4 +325,28 @@ class AdminController extends Controller
 
         return 'Deleted';
     }
+
+
+
+    public function getWinnerList(Request $request)
+    {
+
+        $list = History::join('users', 'histories.user_id', '=', 'users.id')
+            ->where('users.user_name', 'LIKE', '%' . $request->key . '%')
+            ->where('histories.description', 'LIKE', '%WON%')
+            ->whereDate('histories.created_at', '>=', $request->fromDate)
+            ->whereDate('histories.created_at', '<=', $request->toDate)
+            ->select('users.*', 'histories.*', 'histories.points as wonAmt', 'users.points as userBal', 'users.id as userId')
+            ->orderByDesc('histories.id')
+            ->paginate(20);
+
+        return $list;
+    }
+
+
+    public function adminHistory($id)
+    {
+
+        return History::where('user_id', $id)->orderByDesc('id')->paginate(30);
+    }
 }
