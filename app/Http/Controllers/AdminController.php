@@ -129,15 +129,30 @@ class AdminController extends Controller
         return response('updated', Response::HTTP_ACCEPTED);
     }
 
+
+    //make bookie code
+
     public function makeBookie(Request $request)
     {
-        History::where('user_id', $request->id)->delete();
-        Withdraw::where('user_id', $request->id)->delete();
+        if ($request->type === 'bookie') {
+            History::where('user_id', $request->id)->delete();
+            Withdraw::where('user_id', $request->id)->delete();
 
-        User::where('id', $request->id)->update(['role' => 'bookie', 'bookie_id' => $request->id, 'status' => 'active']);
+            User::where('id', $request->id)->update(['role' => 'bookie', 'bookie_id' => $request->id, 'status' => 'active']);
 
-        return response('updated', Response::HTTP_ACCEPTED);
+            return response('updated', Response::HTTP_ACCEPTED);
+        } elseif ($request->type === 'moderator') {
+            History::where('user_id', $request->id)->delete();
+            Withdraw::where('user_id', $request->id)->delete();
+
+            User::where('id', $request->id)->update(['role' => 'moderator', 'bookie_id' => '', 'status' => 'active']);
+
+            return response('updated', Response::HTTP_ACCEPTED);
+        }
     }
+
+
+
     public function bookieListIndex(Request $request)
     {
         $relevence = $request->relevence;
