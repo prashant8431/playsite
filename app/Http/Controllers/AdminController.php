@@ -134,7 +134,7 @@ class AdminController extends Controller
         History::where('user_id', $request->id)->delete();
         Withdraw::where('user_id', $request->id)->delete();
 
-        User::where('id', $request->id)->update(['role' => 'bookie', 'bookie_id' => '', 'status' => 'active']);
+        User::where('id', $request->id)->update(['role' => 'bookie', 'bookie_id' => $request->id, 'status' => 'active']);
 
         return response('updated', Response::HTTP_ACCEPTED);
     }
