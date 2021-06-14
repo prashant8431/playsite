@@ -25,7 +25,7 @@ class UserController extends Controller
             $user->bank_name = $request->bank;
             $user->acc_no = $request->accNo;
             $user->ifsc = $request->ifsc;
-            $user->upi = $request->upi;
+            $user->upi_no = $request->upi;
         }
 
         $user->save();

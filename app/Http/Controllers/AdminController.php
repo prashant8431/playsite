@@ -101,6 +101,10 @@ class AdminController extends Controller
                 ->paginate(20);
 
             return $users;
+        } elseif ($relevence === 'moderator') {
+            $users = User::where('role', 'moderator')
+                ->paginate(20);
+            return $users;
         }
         $users = User::where('user_name', 'LIKE', '%' . $request->key . '%')
             ->where('role', 'user')

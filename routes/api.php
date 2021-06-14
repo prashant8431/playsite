@@ -61,6 +61,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('agentStatus', 'AdminController@agentStatus')->middleware('can:admin');
     Route::post('deleteUser', 'AdminController@deleteUser')->middleware('can:admin');
     Route::get('adminHistory/{id}', 'AdminController@adminHistory')->middleware('can:admin');
+    Route::get('adminwithdrawList', 'WithdrawController@adminwithdrawList')->middleware('can:admin');
+    Route::get('bookieWithdrawList', 'WithdrawController@bookieWithdrawList')->middleware('can:admin');
 
     Route::apiResource('bookieRate', 'BookieRateController')->middleware('can:admin');
 

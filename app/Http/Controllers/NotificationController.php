@@ -45,7 +45,7 @@ class NotificationController extends Controller
         $newNote = new Notification;
         $newNote->user_id = Auth::id();
         $newNote->notification = $request->notification;
-        $newNote->by = 'bookie';
+        $newNote->by = $request->user;
         $newNote->save();
         return 'new';
     }
@@ -58,7 +58,8 @@ class NotificationController extends Controller
      */
     public function show(Notification $notification)
     {
-        //
+        $user = Auth::user();
+        return Notification::where('user_id', $user->bookie_id)->first();
     }
 
     /**

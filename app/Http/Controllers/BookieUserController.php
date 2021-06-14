@@ -283,15 +283,77 @@ class BookieUserController extends Controller
 
     public function searchToken(Request $request)
     {
+        if ($request->type == 'search') {
+            $users = token::where('token', 'LIKE', '%' . $request->key . '%')
+                ->where(['bookie_id' => Auth::id(),])
+                ->orWhere('name', 'LIKE', '%' . $request->key . '%')
+                ->where(['bookie_id' => Auth::id(),])
+                ->orderByDesc('id')
+                ->get();
 
-        $users = token::where('token', 'LIKE', '%' . $request->key . '%')
-            ->where(['bookie_id' => Auth::id(),])
-            ->orWhere('name', 'LIKE', '%' . $request->key . '%')
-            ->where(['bookie_id' => Auth::id(),])
-            ->orderByDesc('id')
-            ->paginate(20);
+            return $users;
+        }
+        if ($request->userName != '') {
+            $report = token::join('histories', 'tokens.token', '=', 'histories.token')
+                ->where('tokens.bookie_id', Auth::id())
+                ->where('histories.gameName', $request->gameName)
+                ->where('tokens.name', $request->userName)
+                ->whereDate('tokens.created_at', '>=', $request->fromDate)
+                ->whereDate('tokens.created_at', '<=', $request->toDate)
+                ->orderByDesc('tokens.id')
+                ->select('tokens.token', 'tokens.name', 'histories.played_no', 'histories.points', 'histories.wonAmt', 'histories.result', 'histories.gameName', 'histories.gameType', 'histories.otc')
+                ->get()
+                ->groupBy('token')->toArray();
 
-        return $users;
+            // $neRe = $report->groupBy('token')->toArray();
+
+            $token = token::join('histories', 'tokens.token', '=', 'histories.token')
+                ->where('tokens.bookie_id', Auth::id())
+                ->where('histories.gameName', $request->gameName)
+                ->where('tokens.name', $request->userName)
+                ->whereDate('tokens.created_at', '>=', $request->fromDate)
+                ->whereDate('tokens.created_at', '<=', $request->toDate)
+                ->orderByDesc('tokens.id')
+                ->select('tokens.token')
+                ->groupBy('tokens.token')
+                ->get();
+
+            return [$report, $token];
+        }
+        $report = token::join('histories', 'tokens.token', '=', 'histories.token')
+            ->where('tokens.bookie_id', Auth::id())
+            ->where('histories.gameName', $request->gameName)
+            ->whereDate('tokens.created_at', '>=', $request->fromDate)
+            ->whereDate('tokens.created_at', '<=', $request->toDate)
+            ->orderByDesc('tokens.id')
+            ->select('tokens.token', 'tokens.name', 'histories.played_no', 'histories.points', 'histories.wonAmt', 'histories.result', 'histories.gameName', 'histories.gameType', 'histories.otc')
+
+            ->get()
+            ->groupBy('token')->toArray();
+
+
+        $token = token::join('histories', 'tokens.token', '=', 'histories.token')
+            ->where('tokens.bookie_id', Auth::id())
+            ->where('histories.gameName', $request->gameName)
+            ->whereDate('tokens.created_at', '>=', $request->fromDate)
+            ->whereDate('tokens.created_at', '<=', $request->toDate)
+            ->orderByDesc('tokens.id')
+            ->select('tokens.token')
+            ->groupBy('tokens.token')
+            ->get();
+
+        // $neRe = $report->groupBy('token')->toArray();
+
+        return [$report, $token];
+
+        // $users = token::where('token', 'LIKE', '%' . $request->key . '%')
+        //     ->where(['bookie_id' => Auth::id(),])
+        //     ->orWhere('name', 'LIKE', '%' . $request->key . '%')
+        //     ->where(['bookie_id' => Auth::id(),])
+        //     ->orderByDesc('id')
+        //     ->paginate(20);
+
+        // return $users;
     }
 
     public function tokenHistory($id)

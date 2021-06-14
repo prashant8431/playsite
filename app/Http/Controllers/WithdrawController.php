@@ -40,10 +40,10 @@ class WithdrawController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        if ($user->points < 2000) { //min 2000
+        if ($user->points < 600) { //min 2000
             return 'low_bal';
         }
-        if ($request->amt < 2000) {
+        if ($request->amt < 600) {
             return 'min_bal';
         }
         if ($request->amt > $user->points) {
@@ -89,9 +89,7 @@ class WithdrawController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $withdraw = Withdraw::where('id', $id)->with(['user' => function ($query) {
-            $query->where('bookie_id', Auth::id());
-        }])->first();
+        $withdraw = Withdraw::where('id', $id)->first();
 
 
         if ($withdraw) {
@@ -118,7 +116,7 @@ class WithdrawController extends Controller
             } elseif ($request->type == 'cancel') {
 
                 $withdraw->remarks = 'Cancelled by admin';
-                $withdraw->reference = 'Insufficient balence';
+                $withdraw->reference = 'Insufficient balance';
                 $withdraw->status = 'Cancelled';
                 $withdraw->save();
                 return $withdraw;
@@ -153,6 +151,22 @@ class WithdrawController extends Controller
 
         return Withdraw::join('users', 'withdraws.user_id', '=', 'users.id')
             ->where('users.bookie_id', Auth::id())
+            ->select('users.*', 'withdraws.*', 'users.id as userId', 'withdraws.status as wstatus')
+            ->orderByDesc('withdraws.id')->get();
+    }
+
+    public function adminwithdrawList()
+    {
+        return Withdraw::join('users', 'withdraws.user_id', '=', 'users.id')
+            ->where('users.bookie_id', '1')
+            ->select('users.*', 'withdraws.*', 'users.id as userId', 'withdraws.status as wstatus')
+            ->orderByDesc('withdraws.id')->get();
+    }
+
+    public function bookieWithdrawList()
+    {
+        return Withdraw::join('users', 'withdraws.user_id', '=', 'users.id')
+            ->where('users.bookie_id', '!=', '1')
             ->select('users.*', 'withdraws.*', 'users.id as userId', 'withdraws.status as wstatus')
             ->orderByDesc('withdraws.id')->get();
     }
