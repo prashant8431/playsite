@@ -52,7 +52,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     //admin
 
     Route::post('getUsers', 'AdminController@getUsers')->middleware('can:admin');
+    Route::get('dashboardValues', 'AdminController@dashboardValues')->middleware('can:admin');
     Route::post('getWinnerList', 'AdminController@getWinnerList')->middleware('can:admin');
+    Route::post('updateWinner', 'AdminController@updateWinner')->middleware('can:admin');
     Route::get('bookieList', 'AdminController@bookieList')->middleware('can:admin'); //for assigning bookie
     Route::post('assignBookie', 'AdminController@assignBookie')->middleware('can:admin');
     Route::post('makeBookie', 'AdminController@makeBookie')->middleware('can:admin');
@@ -63,6 +65,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('adminHistory/{id}', 'AdminController@adminHistory')->middleware('can:admin');
     Route::get('adminwithdrawList', 'WithdrawController@adminwithdrawList')->middleware('can:admin');
     Route::get('bookieWithdrawList', 'WithdrawController@bookieWithdrawList')->middleware('can:admin');
+
 
     Route::apiResource('bookieRate', 'BookieRateController')->middleware('can:admin');
 

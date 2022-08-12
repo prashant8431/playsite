@@ -288,7 +288,7 @@ class BookieUserController extends Controller
                 ->where(['bookie_id' => Auth::id(),])
                 ->orWhere('name', 'LIKE', '%' . $request->key . '%')
                 ->where(['bookie_id' => Auth::id(),])
-                ->orderByDesc('id')
+                ->orderByDesc('tokens.id')
                 ->get();
 
             return $users;
@@ -325,9 +325,8 @@ class BookieUserController extends Controller
             ->where('histories.gameName', $request->gameName)
             ->whereDate('tokens.created_at', '>=', $request->fromDate)
             ->whereDate('tokens.created_at', '<=', $request->toDate)
+            ->select('tokens.token', 'tokens.id', 'tokens.name', 'histories.played_no', 'histories.points', 'histories.wonAmt', 'histories.result', 'histories.gameName', 'histories.gameType', 'histories.otc')
             ->orderByDesc('tokens.id')
-            ->select('tokens.token', 'tokens.name', 'histories.played_no', 'histories.points', 'histories.wonAmt', 'histories.result', 'histories.gameName', 'histories.gameType', 'histories.otc')
-
             ->get()
             ->groupBy('token')->toArray();
 
@@ -337,9 +336,10 @@ class BookieUserController extends Controller
             ->where('histories.gameName', $request->gameName)
             ->whereDate('tokens.created_at', '>=', $request->fromDate)
             ->whereDate('tokens.created_at', '<=', $request->toDate)
-            ->orderByDesc('tokens.id')
             ->select('tokens.token')
             ->groupBy('tokens.token')
+            // ->orderByDesc('tokens.id')
+
             ->get();
 
         // $neRe = $report->groupBy('token')->toArray();

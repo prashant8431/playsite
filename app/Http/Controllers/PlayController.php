@@ -52,6 +52,7 @@ class PlayController extends Controller
         $cTime = date('H:i');
         $day = date('l');
 
+
         $game = Game::find($request->gameId);
 
         $runTime = json_decode($game->runningTime, true);
@@ -65,10 +66,12 @@ class PlayController extends Controller
 
         $openTime = $runTime[$count]['bidOpenTime'];
         $closeTime = $runTime[$count]['bidCloseTime'];
-        // return $cTime;
+
         if ($cTime >= $closeTime) {
             return response(['Error', 'Oops!.. You are late...']);
         } elseif ($cTime >= $openTime && $request->type == 'jodi') {
+            return response(['Error', 'Oops!.. You are late...']);
+        } elseif ($cTime >= $openTime && $request->otc == 'open') {
             return response(['Error', 'Oops!.. You are late...']);
         } else {
 
@@ -89,6 +92,11 @@ class PlayController extends Controller
                     }
                     if ($user->points < $item['amt']) {
                         return response(['Error', 'Insufficient Balance..']);
+                    }
+                    if ($cTime >= $openTime && $item['playType'] == 'jodi') {
+                        return response(['Error', 'Oops!.. You are late...']);
+                    } elseif ($cTime >= $openTime && $item['ocType'] == 'open') {
+                        return response(['Error', 'Oops!.. You are late...']);
                     }
                     $balance = $user->points - $item['amt'];
                     // User::where('id', $user->id)->update(['points' => $balance]);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Bookie_rate;
 use App\History;
 use App\User;
 use App\Withdraw;
@@ -351,15 +352,64 @@ class AdminController extends Controller
     {
 
         $list = History::join('users', 'histories.user_id', '=', 'users.id')
+            ->where('histories.resultStatus', '=', 'Won')
             ->where('users.user_name', 'LIKE', '%' . $request->key . '%')
-            ->where('histories.description', 'LIKE', '%WON%')
             ->whereDate('histories.created_at', '>=', $request->fromDate)
             ->whereDate('histories.created_at', '<=', $request->toDate)
-            ->select('users.*', 'histories.*', 'histories.points as wonAmt', 'users.points as userBal', 'users.id as userId')
+            ->select('users.*', 'histories.*', 'histories.id as histId', 'users.points as userBal', 'users.id as userId')
             ->orderByDesc('histories.id')
             ->paginate(20);
 
         return $list;
+    }
+
+    public function updateWinner(Request $request)
+    {
+
+        $history = History::with('user')->find($request->histId);
+        // return $history;
+        $rates = Bookie_rate::where('id', $history->user->rate_id)->first();
+        $singleRate = $rates->single;
+        $jodiRate = $rates->jodi;
+        $singlePattiRate = $rates->single_patti;
+        $doublePattiiRate = $rates->double_patti;
+        $tripplePattiRate = $rates->tripple_patti;
+        if ($request->type == 'approve') {
+            $userBal = $history->user->points;
+            $wonAmt = 0;
+            if ($history->gameType == 'single') {
+                $wonAmt = $singleRate * $history->points;
+            } elseif ($history->gameType == 'jodi') {
+                $wonAmt = $jodiRate * $history->points;
+            } elseif ($history->gameType == 'singlePatti') {
+                $wonAmt = $singlePattiRate * $history->points;
+            } elseif ($history->gameType == 'doublePatti') {
+                $wonAmt = $doublePattiiRate * $history->points;
+            } elseif ($history->gameType == 'tripplePatti') {
+                $wonAmt = $tripplePattiRate * $history->points;
+            }
+
+
+            $newBal = $userBal + $wonAmt;
+            User::where('id', $history->user->id)->update(['points' => $newBal]);
+            History::where('id', $history->id)->update(['wonAmt' => $wonAmt]);
+
+
+            $newHistory = new History();
+            $newHistory->user_id = $request->userId;
+            $newHistory->description = 'WON ' . $history->gameName . ' ' . $history->gameType . ' ' . $history->otc . ' ' . $history->played_no . '';
+            $newHistory->points = $wonAmt;
+            $newHistory->balance = $newBal;
+            $newHistory->type = 'Credit';
+            $newHistory->result = $history->played_no;
+            $newHistory->resultStatus = 'Success';
+            $newHistory->token = $history->token;
+            $newHistory->save();
+            return 'success';
+        } elseif ($request->type = 'reject') {
+            History::where('id', $history->id)->update(['wonAmt' => 'reject']);
+            return 'success';
+        }
     }
 
 
@@ -367,5 +417,19 @@ class AdminController extends Controller
     {
 
         return History::where('user_id', $id)->orderByDesc('id')->paginate(30);
+    }
+
+    public function dashboardValues()
+    {
+        $totalUsers = User::where('role', 'user')->select(DB::raw('COUNT(id) as totalUsers'))->first();
+        $totalAgents = User::where('role', 'bookie')->select(DB::raw('COUNT(id) as totalAgents'))->first();
+
+        $totalDeposit = History::where('description', 'Buy')->select(DB::raw('SUM(points) as totalDeposit'))->first();
+        $wonAmt = History::select(DB::raw('SUM(wonAmt) as wonAmt'))->first();
+
+        $totalWithdraw = Withdraw::where('status', 'Approved')->select(DB::raw('SUM(amount) as totalWithdraw'))->first();
+        $pendingWithdraw = Withdraw::where('status', 'Requested')->select(DB::raw('SUM(amount) as pendingWithdraw'))->first();
+
+        return [$totalUsers, $totalAgents, $totalDeposit, $wonAmt, $totalWithdraw, $pendingWithdraw];
     }
 }

@@ -115,7 +115,7 @@ class ResultController extends Controller
                     History::where('id', $hist->id)->update([
                         'result' => $winNum,
                         'resultstatus' => $resultStatus,
-                        'wonAmt' => $wonAmt,
+                        // 'wonAmt' => $wonAmt,
                     ]);
                 }
             } // if open already update
@@ -216,7 +216,7 @@ class ResultController extends Controller
                     History::where('id', $hist->id)->update([
                         'result' => $winNum,
                         'resultstatus' => $resultStatus,
-                        'wonAmt' => $wonAmt,
+                        // 'wonAmt' => $wonAmt,
                     ]);
                 }
                 return 'update';
@@ -228,25 +228,28 @@ class ResultController extends Controller
 
     function userBalUpdate($wonAmt, $playedNumber, $gameName, $gtype, $otc, $userId, $token)
     {
-        $user = User::find($userId);
-        if (isset($user)) {
-            $userBal = $user->points;
 
-            $newBal = $userBal + $wonAmt;
-            User::where('id', $userId)->update(['points' => $newBal]);
+        // $user = User::find($userId);
+        // if (isset($user)) {
+        //     $userBal = $user->points;
 
-            $history = new History();
-            $history->user_id = $userId;
-            $history->description = 'WON ' . $gameName . ' ' . $gtype . ' ' . $otc . ' ' . $playedNumber . '';
-            $history->points = $wonAmt;
-            $history->balance = $newBal;
-            $history->type = 'Credit';
-            $history->result = $playedNumber;
-            $history->resultStatus = 'Success';
-            $history->token = $token;
-            $history->save();
-        }
+        //     $newBal = $userBal + $wonAmt;
+        //     User::where('id', $userId)->update(['points' => $newBal]);
+
+        //     $history = new History();
+        //     $history->user_id = $userId;
+        //     $history->description = 'WON ' . $gameName . ' ' . $gtype . ' ' . $otc . ' ' . $playedNumber . '';
+        //     $history->points = $wonAmt;
+        //     $history->balance = $newBal;
+        //     $history->type = 'Credit';
+        //     $history->result = $playedNumber;
+        //     $history->resultStatus = 'Success';
+        //     $history->token = $token;
+        //     $history->save();
+        // }
     }
+
+
 
     /**
      * Display the specified resource.
